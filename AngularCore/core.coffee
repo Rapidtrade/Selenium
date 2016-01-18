@@ -10,6 +10,7 @@ before ->
   @timeout = 8000
   global.driver = new selenium.Builder().withCapabilities(selenium.Capabilities.chrome()).build()
   global.url = "http://localhost/ws/angularcore"
+  global.timeout = 20000
   driver.getWindowHandle()
   driver.get url
   driver.findElement(id: 'exampleInputEmail1').sendKeys 'TDD'
@@ -20,10 +21,10 @@ before ->
   ), 30000, '\nFailed to load Welcome page.'
   driver.sleep 1000
 
-
+###
 after ->
   driver.quit()
-
+###
 
 describe 'Reset TDD data', ->
   it "Reset TDD supplier", ->
@@ -32,10 +33,10 @@ describe 'Reset TDD data', ->
     driver.findElement(id: "resetBtn").click()
     driver.wait ( ->
       driver.isElementPresent(id: 'successmsg')
-    ), 10000, '\nFailed to reset data.'
+    ), timeout, '\nFailed to reset data.'
 
 describe 'Admin Tests 1', ->
-  it "Create user", ->
+  it "Create manager", ->
     driver.get url + "/#/users/"
     driver.findElement(linkText: "New").click()
     driver.findElement(id: "UserID").sendKeys "TDDMANAGER"
@@ -45,7 +46,20 @@ describe 'Admin Tests 1', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert alert-success ng-binding ng-scope']")
-    ), 5000, "\nFailed to create user"
+    ), timeout, "\nFailed to create user"
+
+  it "Create rep 2", ->
+    driver.get url + "/#/users/"
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "UserID").sendKeys "TDD2"
+    driver.findElement(id: "Name").sendKeys "TDD Rep 2"
+    driver.findElement(id: "Password").sendKeys "PASSWORD"
+    driver.findElement(id: "Manager").sendKeys "TDD M"
+    driver.findElement(xpath: "//div[@class='checkbox'][2]/label/input").click()
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert alert-success ng-binding ng-scope']")
+    ), timeout, "\nFailed to create user"
 
   it "Create options", ->
     driver.get url + "/#/options/"
@@ -57,7 +71,7 @@ describe 'Admin Tests 1', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert alert-success ng-binding ng-scope']")
-    ), 10000, "\nFailed to create option"
+    ), timeout, "\nFailed to create option"
 
   it "Create User Exit", ->
     driver.get url + "/#/userexit/"
@@ -69,7 +83,7 @@ describe 'Admin Tests 1', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert alert-success ng-binding ng-scope']")
-    ), 5000, "\nFailed to save user exit"
+    ), timeout, "\nFailed to save user exit"
 
 
   it "Create tree", ->
@@ -84,7 +98,7 @@ describe 'Admin Tests 1', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//a[@class='list-group-item ng-scope']")
-    ), 20000, "\nFailed to save tree"
+    ), timeout, "\nFailed to save tree"
     driver.sleep 3000
     driver.findElement(xpath: "//div[@class='col-xs-3 ng-binding'][1]").getText().then (treeID) ->
       expect(treeID).to.be.equal("Pricelist")
@@ -93,7 +107,9 @@ describe 'Activity Types', ->
   it "Create basic activityType", ->
     driver.get url + "/#/activitytypes/"
     driver.findElement(linkText: "New").click()
-    driver.findElement(id: "Label").sendKeys "Customer Visit"
+    driver.findElement(id: "ActivityTypeID").clear()
+    driver.findElement(id: "ActivityTypeID").sendKeys "CHECKIN"
+    driver.findElement(id: "Label").sendKeys "Checkin"
     driver.findElement(xpath: "(//button[@class='btn btn-default'])[3]").click()
     driver.findElement(id: "options").sendKeys "Made a Sale"
     driver.findElement(id: "addoption").click()
@@ -102,20 +118,58 @@ describe 'Activity Types', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
-    ), 10000, '\nFailed to create activitytypes'
+    ), timeout, '\nFailed to create activitytypes'
     driver.findElement(linkText: "Back").click()
 
-  it "Create pipeline activityType", ->
+  it "Create pipeline Cold Call activityType", ->
     driver.get url + "/#/activitytypes/"
     driver.findElement(linkText: "New").click()
+    driver.findElement(id: "ActivityTypeID").clear()
+    driver.findElement(id: "ActivityTypeID").sendKeys "CC"
     driver.findElement(id: "Label").sendKeys "Cold Call"
     driver.findElement(id: "pipeline").click()
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
-    ), 10000, '\nFailed to create activitytypes'
+    ), timeout, '\nFailed to create cold call activitytypes'
 
-describe 'Discount Conditions', ->
+  it "Create pipeline First Meeting activityType", ->
+    driver.get url + "/#/activitytypes/"
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "ActivityTypeID").clear()
+    driver.findElement(id: "ActivityTypeID").sendKeys "FM"
+    driver.findElement(id: "Label").sendKeys "First Meeting"
+    driver.findElement(id: "pipeline").click()
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
+    ), timeout, '\nFailed to create first meeting activitytypes'
+
+  it "Create pipeline proposal activityType", ->
+    driver.get url + "/#/activitytypes/"
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "ActivityTypeID").clear()
+    driver.findElement(id: "ActivityTypeID").sendKeys "PRO"
+    driver.findElement(id: "Label").sendKeys "Proposal"
+    driver.findElement(id: "pipeline").click()
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
+    ), timeout, '\nFailed to create proposal activitytypes'
+
+  it "Create pipeline award activityType", ->
+    driver.get url + "/#/activitytypes/"
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "ActivityTypeID").clear()
+    driver.findElement(id: "ActivityTypeID").sendKeys "AWA"
+    driver.findElement(id: "Label").sendKeys "Awarded"
+    driver.findElement(id: "pipeline").click()
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
+    ), timeout, '\nFailed to create proposal activitytypes'
+
+describe 'Discount GP Conditions', ->
   it "Create group/product discount", ->
     driver.get url + "/#/discount/"
     driver.sleep 500
@@ -126,12 +180,9 @@ describe 'Discount Conditions', ->
     driver.findElement(id: "SortOrder").sendKeys "1"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
-    ), 10000, '\nFailed to create Discount'
-    # Go back and re-select so we can add the conditions
-    driver.findElement(linkText: "Back").click()
-    driver.sleep 1000
-    driver.findElement(xpath: "(//a[@class='list-group-item ng-scope'])[1]").click()
+      driver.isElementPresent(linkText: "Discount Conditions")
+    ), timeout, '\nFailed to create Discount'
+
   it "Create account condition", ->
     driver.findElement(linkText: "Discount Conditions").click()
     driver.findElement(linkText: "New").click()
@@ -141,7 +192,8 @@ describe 'Discount Conditions', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "(//a[@class='list-group-item ng-scope'])[1]")
-    ), 10000, "\nFailed to save discountcondition"
+    ), timeout, "\nFailed to save discountcondition"
+
   it "Create product condition", ->
     driver.findElement(linkText: "New").click()
     driver.findElement(id: "RTObject").sendKeys "#P"
@@ -150,10 +202,12 @@ describe 'Discount Conditions', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "(//a[@class='list-group-item ng-scope'])[2]")
-    ), 10000, "\nFailed to save discountcondition"
+    ), timeout, "\nFailed to save discountcondition"
+
+describe 'Discount AP Conditions', ->
   it "Create account/product discount", ->
     driver.get url + "/#/discount/"
-    driver.sleep 500
+    driver.sleep 1000
     driver.findElement(linkText: "New Discount").click()
     driver.findElement(id: "DiscountID").sendKeys "AP"
     driver.findElement(id: "Name").sendKeys "Account Price"
@@ -161,12 +215,9 @@ describe 'Discount Conditions', ->
     driver.findElement(id: "SortOrder").sendKeys "1"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
-    ), 10000, '\nFailed to create Discount'
-    # Go back and re-select so we can add the conditions
-    driver.findElement(linkText: "Back").click()
-    driver.sleep 1000
-    driver.findElement(xpath: "(//a[@class='list-group-item ng-scope'])[1]").click()
+      driver.isElementPresent(linkText: "Discount Conditions")
+    ), timeout, '\nFailed to create Discount'
+
   it "Create account condition", ->
     driver.findElement(linkText: "Discount Conditions").click()
     driver.findElement(linkText: "New").click()
@@ -176,7 +227,7 @@ describe 'Discount Conditions', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "(//a[@class='list-group-item ng-scope'])[1]")
-    ), 10000, "\nFailed to save discountcondition"
+    ), timeout, "\nFailed to save discountcondition"
   it "Create product condition", ->
     driver.findElement(linkText: "New").click()
     driver.findElement(id: "RTObject").sendKeys "#P"
@@ -185,7 +236,7 @@ describe 'Discount Conditions', ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "(//a[@class='list-group-item ng-scope'])[2]")
-    ), 10000, "\nFailed to save discountcondition"
+    ), timeout, "\nFailed to save discountcondition"
 
 describe "Create products", ->
   it "Create BIKE1", ->
@@ -199,7 +250,7 @@ describe "Create products", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create product 1"
+      ), timeout, "\nCould not create product 1"
   it "Create BIKE2", ->
     driver.findElement(linkText: "Back").click()
     driver.sleep 1000
@@ -211,7 +262,7 @@ describe "Create products", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create product 2"
+      ), timeout, "\nCould not create product 2"
   it "Create BIKE3", ->
     driver.findElement(linkText: "Back").click()
     driver.sleep 1000
@@ -223,7 +274,7 @@ describe "Create products", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create product 3"
+      ), timeout, "\nCould not create product 3"
   it "Create BIKE4", ->
     driver.findElement(linkText: "Back").click()
     driver.sleep 1000
@@ -235,7 +286,7 @@ describe "Create products", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create product 4"
+      ), timeout, "\nCould not create product 4"
 
 describe "Create Categories", ->
   it "Create Bikes categories", ->
@@ -245,10 +296,10 @@ describe "Create Categories", ->
     driver.findElement(id: "Description").sendKeys "Bikes"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create BIKES"
+      driver.isElementPresent(xpath: "(//a[@id='add'])[1]")
+      ), timeout, "\nCould not create BIKES"
+
   it "Create Racing Bikes", ->
-    driver.sleep 1000
     driver.findElement(xpath: "(//a[@id='add'])[1]").click()
     driver.findElement(id: "CategoryID").sendKeys "RB"
     driver.findElement(id: "Description").sendKeys "Racing Bikes"
@@ -256,13 +307,13 @@ describe "Create Categories", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create Racing BIKES"
+      ), timeout, "\nCould not create Racing BIKES"
+
   it "Create Mountain Bikes", ->
-    driver.sleep 1000
-    driver.findElement(linkText: "Back").click()
+    driver.get url + "#/prodcat"
     driver.wait (->
       driver.isElementPresent(xpath: "(//a[@id='add'])[1]")
-      ), 10000, "\nCould not create category"
+      ), timeout, "\nCould not get categories"
     driver.findElement(xpath: "(//a[@id='add'])[1]").click()
     driver.findElement(id: "CategoryID").sendKeys "MB"
     driver.findElement(id: "Description").sendKeys "Mountain Bikes"
@@ -270,7 +321,7 @@ describe "Create Categories", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), 10000, "\nCould not create Mountain BIKES"
+    ), timeout, "\nCould not create Mountain BIKES"
     driver.findElement(linkText: "Back").click()
 
 describe "Create Pricelist", ->
@@ -284,14 +335,15 @@ describe "Create Pricelist", ->
     driver.findElement(xpath: "//button[@class='btn btn-primary']").click()
     driver.wait (->
       driver.isElementPresent(id: "plist")
-    ), 10000, "\nCould not create pricelist A"
-    driver.sleep 4000
+    ), timeout, "\nCould not create pricelist A"
     driver.get url + "/#/prices/A"
+    #wait for alert to disappear
+    driver.sleep 4000
   it "Create price for Bike 1", ->
     driver.findElement(id: "newProduct").sendKeys "BIKE1"
     driver.findElement(id: "newPrice").sendKeys "8000"
-    driver.sleep 500
     driver.findElement(id: "addPrice").click()
+    driver.sleep 500
   it "Create price for Bike 2", ->
     driver.findElement(id: "newProduct").sendKeys "BIKE2"
     driver.findElement(id: "newPrice").sendKeys "10000"
@@ -311,43 +363,52 @@ describe "Create Pricelist", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), 10000, "\nCould not save pricelist"
+    ), timeout, "\nCould not save pricelist"
 
 describe "Discount Values", ->
   it "Group/Product Prices", ->
     driver.get url + "/#/dv/"
     driver.sleep 1000
     driver.findElement(xpath: "//a[div/div='AccountGroup']").click()
-    driver.sleep 1000
+    driver.wait (->
+      driver.isElementPresent(xpath: "//a[div/div='Big Stores']")
+    ), timeout, "\nBig Stores did not arrive"
     driver.findElement(xpath: "//a[div/div='Big Stores']").click()
-    driver.sleep 500
+    driver.wait (->
+      driver.isElementPresent(linkText: "Group Price")
+    ), timeout, "Tab did not appear"
     driver.findElement(id: "productid").sendKeys "BIKE1"
     driver.findElement(id: "qtylow").sendKeys "0"
     driver.findElement(id: "qtyhigh").sendKeys "9999"
     driver.findElement(id: "pricebox").sendKeys "7000"
     driver.findElement(id: "addBtn").click()
-    driver.sleep 1000
+    driver.sleep 500
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), 10000, "\nCould not create discountvalue"
+    ), timeout, "Could not save discount values"
+
   it "Customer/Product Prices", ->
     driver.get url + "/#/dv/"
     driver.sleep 1000
     driver.findElement(xpath: "//a[div/div='AccountID']").click()
-    driver.sleep 2000
+    driver.wait (->
+      driver.isElementPresent(xpath: "//a[div/div='TDD1']")
+    ), timeout, "\TDD1 did not arrive"
     driver.findElement(xpath: "//a[div/div='TDD1']").click()
-    driver.sleep 1000
+    driver.wait (->
+      driver.isElementPresent(linkText: "Account Price")
+    ), timeout, "Tab did not appear"
     driver.findElement(id: "productid").sendKeys "BIKE1"
     driver.findElement(id: "qtylow").sendKeys "0"
     driver.findElement(id: "qtyhigh").sendKeys "9999"
     driver.findElement(id: "pricebox").sendKeys "6000"
     driver.findElement(id: "addBtn").click()
-    driver.sleep 1000
+    driver.sleep 500
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), 10000, "\nCould not create discountvalue"
+    ), timeout, "\nCould not create discountvalue"
 
 describe "Promotions", ->
   it "Promo Details", ->
@@ -400,15 +461,72 @@ describe "Promotions", ->
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), 10000, "\nCould not create discountvalue"
-    screenshot "Promotions"
+    ), timeout, "\nCould not create discountvalue"
+    #screenshot "Promotions"
 
-  ###
-  # take a snapshot
-  ###
-  screenshot = (step) ->
-    driver.takeScreenshot().then (image, err) ->
-      require('fs').writeFile 'out.png', image, 'base64', (err) ->
-        console.log err
-        return
+
+describe.only "Day End Activities", ->
+  it "Create Marketing", ->
+    driver.get url + "#/dayendactivities"
+    driver.sleep 500
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "DayEndTypeID").sendKeys "MARK"
+    driver.findElement(id: "Description").sendKeys "Marketing"
+    driver.findElement(id: "isParent").click()
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), timeout, "\nCould not create Marketing"
+  it "Create Cold Calling", ->
+    driver.get url + "#/dayendactivities"
+    driver.sleep 500
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "DayEndTypeID").sendKeys "MCC"
+    driver.findElement(id: "Description").sendKeys "Cold Calling"
+    driver.findElement(id: "parent").sendKeys "MARK"
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), timeout, "\nCould not create Marketing"
+  it "Create social networking", ->
+    driver.get url + "#/dayendactivities"
+    driver.sleep 500
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "DayEndTypeID").sendKeys "MSC"
+    driver.findElement(id: "Description").sendKeys "Social Networking"
+    driver.findElement(id: "parent").sendKeys "MARK"
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), timeout, "\nCould not create Marketing"
+  it "Create Customer", ->
+    driver.get url + "#/dayendactivities"
+    driver.sleep 500
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "DayEndTypeID").sendKeys "CUST"
+    driver.findElement(id: "Description").sendKeys "Customer"
+    driver.findElement(id: "isParent").click()
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), timeout, "\nCould not create Marketing"
+  it "Create Customer Visits", ->
+    driver.get url + "#/dayendactivities"
+    driver.sleep 500
+    driver.findElement(linkText: "New").click()
+    driver.findElement(id: "DayEndTypeID").sendKeys "CV"
+    driver.findElement(id: "Description").sendKeys "Customer Visits"
+    driver.findElement(id: "parent").sendKeys "CUST"
+    driver.findElement(id: "sessionvariable").sendKeys "C"
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), timeout, "\nCould not create Marketing"
+
+
+screenshot = (step) ->
+  driver.takeScreenshot().then (image, err) ->
+    require('fs').writeFile 'out.png', image, 'base64', (err) ->
+      console.log err
       return
+    return

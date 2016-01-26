@@ -140,10 +140,11 @@ describe "Contacts", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), 10000, "\nFailed to create contact"
 
-describe "Activities", ->
+describe.only "Activities", ->
   it "Basic activity", ->
     driver.get url + "#/myterritory"
     driver.findElement(xpath: "//a[div='TDD Customer 1']").click()
+    driver.sleep 500
     driver.findElement(xpath: "//a/button[@class='selectactivitytype fa fa-plus']").click()
     driver.sleep 1000
     driver.findElement(xpath: "//a[p='Checkin']").click()
@@ -182,6 +183,12 @@ describe "Activities", ->
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), 10000, "\nCould not create activity"
+
+  it "Check percentage", ->
+    driver.get url + "#/company/opportunities/TDD1"
+    driver.findElement(xpath: "//div[text()='Rapid Sales']/following-sibling::div[4]").then (percent) ->
+      expect(percent).to.be.equal("9%")
+
 
 describe "Create call cycle", ->
   it "Get our week number", ->
@@ -350,6 +357,9 @@ describe "Day End's", ->
     driver.wait (->
       driver.findElement(xpath: "//div[span[@class='pull-right ng-binding']='" + d + "']/span/small[@class='ng-binding cal-events-num badge badge-green pull-left']")
       ), timeout, "\nCould not create activity"
+
+
+
 
 
   ###

@@ -18,14 +18,14 @@ before ->
   driver.findElement(xpath: "//button[@type='submit']").click()
   driver.wait (->
     driver.isElementPresent(linkText: 'Admin')
-  ), 30000, '\nFailed to load Welcome page.'
+  ), 50000, '\nFailed to load Welcome page.'
   driver.sleep 1000
 
 ###
 after ->
   driver.quit()
 ###
-
+###
 describe 'Reset TDD Rapidtargets data', ->
   it "Reset TDD supplier", ->
     driver.get url + "/#/test/"
@@ -34,3 +34,13 @@ describe 'Reset TDD Rapidtargets data', ->
     driver.wait ( ->
       driver.isElementPresent(id: 'successmsg')
     ), 10000, '\nFailed to reset data.'
+###
+describe 'Test searching pricelist', ->
+  it "Search for bikes", ->
+    driver.get url + "#/myterritory"
+    driver.findElement(xpath: "//a[div[text()='TDD Customer 2']]").click()
+    driver.findElement(id: "searchbox").sendKeys "bi"
+    driver.findElement(xpath: "//button[text()='Search']").click()
+    driver.wait (->
+        driver.isElementPresent(xpath: "//small[text()='BIKE2']")
+    ), 30000, "Could not find a BIKE"

@@ -128,6 +128,8 @@ describe 'Activity Types', ->
     driver.findElement(id: "ActivityTypeID").sendKeys "CC"
     driver.findElement(id: "Label").sendKeys "Cold Call"
     driver.findElement(id: "pipeline").click()
+    driver.findElement(id: "PercentageComplete").clear()
+    driver.findElement(id: "PercentageComplete").sendKeys "10"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
@@ -140,6 +142,8 @@ describe 'Activity Types', ->
     driver.findElement(id: "ActivityTypeID").sendKeys "FM"
     driver.findElement(id: "Label").sendKeys "First Meeting"
     driver.findElement(id: "pipeline").click()
+    driver.findElement(id: "PercentageComplete").clear()
+    driver.findElement(id: "PercentageComplete").sendKeys "30"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
@@ -152,6 +156,8 @@ describe 'Activity Types', ->
     driver.findElement(id: "ActivityTypeID").sendKeys "PRO"
     driver.findElement(id: "Label").sendKeys "Proposal"
     driver.findElement(id: "pipeline").click()
+    driver.findElement(id: "PercentageComplete").clear()
+    driver.findElement(id: "PercentageComplete").sendKeys "50"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
@@ -164,6 +170,8 @@ describe 'Activity Types', ->
     driver.findElement(id: "ActivityTypeID").sendKeys "AWA"
     driver.findElement(id: "Label").sendKeys "Awarded"
     driver.findElement(id: "pipeline").click()
+    driver.findElement(id: "PercentageComplete").clear()
+    driver.findElement(id: "PercentageComplete").sendKeys "100"
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")

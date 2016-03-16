@@ -5,7 +5,6 @@ chai = require 'chai'
 chai.use require 'chai-as-promised'
 expect = chai.expect
 
-
 before ->
   @timeout = 8000
   global.driver = new selenium.Builder().withCapabilities(selenium.Capabilities.chrome()).build()
@@ -33,11 +32,12 @@ describe 'Reset TDD Rapidtargets data', ->
     driver.findElement(id: "resetBtn").click()
     driver.wait ( ->
       driver.isElementPresent(id: 'successmsg')
-    ), 10000, '\nFailed to reset data.'
+    ), timeout, '\nFailed to reset data.'
 
 describe "Checking Group's", ->
   it "Create a group", ->
     driver.get url + "#/groups"
+    driver.sleep 500
     driver.findElement(linkText: "Create Group").click()
     driver.sleep 500
     driver.findElement(id: "name").sendKeys "Joburg reps"
@@ -48,12 +48,14 @@ describe "Checking Group's", ->
     driver.sleep 2000
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']/span[@class='ng-binding']")
-    ), 10000, '\nFailed to create group'
+    ), timeout, '\nFailed to create group'
 
   it "Invite user", ->
     driver.get url + "#/groups"
-    driver.sleep 1000
-    driver.findElement(xpath: "//a[div='Joburg reps   ']").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//a/div[contains(.,'Joburg')]")
+    ), timeout, '\nFailed to create group'
+    driver.findElement(xpath: "//a/div[contains(.,'Joburg')]").click()
     driver.sleep 500
     driver.findElement(linkText: "Members").click()
     driver.sleep 500
@@ -63,7 +65,7 @@ describe "Checking Group's", ->
     driver.findElement(xpath: "//button[@class='btn btn-success ng-binding']").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nFailed to invite user"
+      ), timeout, "\nFailed to invite user"
     driver.findElement(xpath: "//div[@class='modal-footer']/button[@class='btn btn-default']").click()
     driver.sleep 500
     driver.isElementPresent(xpath: "//a[div/div='TDD Rep 2']")
@@ -77,7 +79,7 @@ describe "Checking Group's", ->
     driver.findElement(xpath: "//button[@class='btn btn-success']").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[contains(text(),'hello world')]")
-      ), 10000, "\nFailed to create message"
+      ), timeout, "\nFailed to create message"
 
 describe "Companies", ->
   it "Create a new company and set displayfields", ->
@@ -113,7 +115,7 @@ describe "Contacts", ->
   it "Create contact 1 for TDD1", ->
     driver.get url + "#/myterritory"
     driver.findElement(xpath: "//a[div='TDD Customer 1']").click()
-    driver.sleep 500
+    driver.sleep 1000
     driver.findElement(xpath: "//a[text()='Contacts']").click()
     driver.findElement(linkText: "Contact").click()
     driver.findElement(id: "Name").sendKeys "Peter Prinsloo"
@@ -140,7 +142,7 @@ describe "Contacts", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), 10000, "\nFailed to create contact"
 
-describe.only "Activities", ->
+describe "Activities", ->
   it "Basic activity", ->
     driver.get url + "#/myterritory"
     driver.findElement(xpath: "//a[div='TDD Customer 1']").click()
@@ -169,7 +171,7 @@ describe.only "Activities", ->
     driver.findElement(id: "upfrontFee").clear()
     driver.findElement(id: "monthlyFee").clear()
     driver.findElement(id: "closeByDate").clear()
-    driver.findElement(id: "name").sendKeys "RapidSales"
+    driver.findElement(id: "name").sendKeys "Rapid Sales"
     driver.findElement(id: "description").sendKeys "Rapidsales opportunity"
     driver.findElement(id: "upfrontFee").sendKeys "1000"
     driver.findElement(id: "monthlyFee").sendKeys "100"
@@ -179,6 +181,7 @@ describe.only "Activities", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), 10000, "\nCould not create activity"
     driver.findElement(id: "contacts").sendKeys "a"
+    driver.sleep 4000
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
@@ -187,7 +190,39 @@ describe.only "Activities", ->
   it "Check percentage", ->
     driver.get url + "#/company/opportunities/TDD1"
     driver.findElement(xpath: "//div[text()='Rapid Sales']/following-sibling::div[4]").then (percent) ->
-      expect(percent).to.be.equal("9%")
+      expect(percent).to.be.equal("10%")
+
+describe.only "Check Opportunities", ->
+  it "Check listing in my territory", ->
+    driver.get url + "#/myterritory"
+    driver.sleep 500
+    driver.findElement(linkText: "Opportunities").click()
+    driver.sleep 500
+    driver.findElement(xpath: "(//a[div/div[text()='Rapid Sales']])[1]").click()
+    driver.sleep 500
+    driver.findElement(id: "monthlyFee").getAttribute('value').then (amount) ->
+      expect(amount).to.be.equal("100")
+
+  it "Check opportunity activities", ->
+    driver.sleep 500
+    driver.findElement(linkText: "Activities").click()
+    driver.isElementPresent(xpath: "//a[div/div[text()='Cold Call']]")
+
+  it "Check for checkin activity does not appear", ->
+    driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+    driver.isElementPresent(xpath: "//a[p[text()='Checkin']]").then (isPresent) ->
+      expect(isPresent).to.be.false
+      return
+
+  it "Create pipeline activity" , ->
+    driver.findElement(xpath: "//a[p[text()='First Meeting']]").click()
+    driver.findElement(id: "note").sendKeys "First meeting went well"
+    driver.findElement(id: "Opportunity").getAttribute('value').then (text) ->
+      expect(text).to.be.equal("Rapid Sales")
+    driver.findElement(linkText: "Save").click()
+    driver.wait (->
+      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), 10000, "\nCould not create activity"
 
 
 describe "Create call cycle", ->

@@ -418,7 +418,7 @@ describe "Discount Values", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
     ), timeout, "\nCould not create discountvalue"
 
-describe "Promotions", ->
+describe.only "Promotions", ->
   it "Promo Details", ->
     driver.get url + "#/promo"
     driver.sleep 1000
@@ -451,7 +451,7 @@ describe "Promotions", ->
     driver.findElement(id: "search").clear()
     driver.findElement(id: "search").sendKeys "b"
     driver.findElement(id: "searchbtn").click()
-    driver.sleep 1000
+    driver.sleep 2000
     driver.findElement(xpath: "//a[div='MB']").click()
     driver.findElement(xpath: "//button[@class='btn btn-default']").click()
     driver.sleep 500
@@ -462,7 +462,9 @@ describe "Promotions", ->
     driver.findElement(id: "search").clear()
     driver.findElement(id: "search").sendKeys "bike"
     driver.findElement(id: "searchbtn").click()
-    driver.sleep 1000
+    driver.wait (->
+      driver.isElementPresent(xpath: "//a[div='BIKE1']")
+      ), timeout, "\nCould not find bike1"
     driver.findElement(xpath: "//a[div='BIKE1']").click()
     driver.findElement(xpath: "//button[@class='btn btn-default']").click()
     driver.sleep 500
@@ -473,7 +475,7 @@ describe "Promotions", ->
     #screenshot "Promotions"
 
 
-describe.only "Day End Activities", ->
+describe "Day End Activities", ->
   it "Create Marketing", ->
     driver.get url + "#/dayendactivities"
     driver.sleep 500

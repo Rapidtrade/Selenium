@@ -262,7 +262,7 @@ describe 'Give rep price', ->
         driver.findElement(id: "totalexc").getText().then (carttotal) ->
             expect(carttotal).to.equal("R5,000.00")
 
-describe 'Give rep discount', ->
+describe.only 'Give rep discount', ->
     it "Open customer 2, empty basket and click on BIKE2", ->
         driver.sleep pause
         gopricelist "TDD Customer 2"

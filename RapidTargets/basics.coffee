@@ -226,6 +226,61 @@ describe "Check Opportunities", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), 10000, "\nCould not create activity"
 
+describe "Check navigation in history", ->
+    it "Check activities -> Activity -> activities" , ->
+        gocustomer('TDD Customer 1')
+        driver.findElement(linkText: "History").click()
+        waitFor("//div[text()='Checkin']","Activities did not display")
+        driver.findElement(xpath: "//div[text()='Checkin']").click()
+        driver.sleep 500
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='Checkin']","Navigation problem, Activities did not display after back from activity")
+
+    it "Check opportunities -> activities -> NEW -> activities -> opportunities" , ->
+        driver.sleep 500
+        driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='Checkin']","Navigation problem, Activities did not display after back from selectactivitytype")
+        driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+        driver.findElement(xpath: "//p[text()='First Meeting']").click()
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='Checkin']","Navigation problem, Activities did not display after back from NEW activity")
+
+    it "Check opportunities -> opportunity -> activities -> opportunity -> opportunities" , ->
+        gocustomer('TDD Customer 1')
+        driver.findElement(linkText: "History").click()
+        waitFor("//div[text()='Checkin']","Activities did not display")
+        driver.findElement(linkText: "Opportunities").click()
+        waitFor("//div[text()='Rapid Sales']","Rapid Sales Opportunity did not display")
+        driver.findElement(xpath: "//div[text()='Rapid Sales']").click()
+        waitFor("//input[@id='name']", "Rapid Sales opportunity form did not display")
+        driver.findElement(linkText: "Activities").click()
+
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='Rapid Sales']","Navigation problem, opportunities not displayed after clicking on back")
+
+    it "Check opportunities -> opportunity -> activities -> activity -> activities -> opportunity -> opportunities" , ->
+        driver.findElement(linkText: "Opportunities").click()
+        waitFor("//div[text()='Rapid Sales']","Rapid Sales Opportunity did not display")
+        driver.findElement(xpath: "//div[text()='Rapid Sales']").click()
+        waitFor("//input[@id='name']", "Rapid Sales opportunity form did not display")
+        driver.findElement(linkText: "Activities").click()
+        waitFor("//div[text()='First Meeting']", "Opportunity activities did not appear")
+        driver.findElement(xpath:"//div[text()='First Meeting']").click()
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='First Meeting']", "Navigation problem, Activities not displayed after clicking on back")
+
+    it "Check opportunities -> opportunity -> activities -> NEW -> activities -> opportunity -> opportunities" , ->
+        driver.sleep 500
+        driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='First Meeting']", "Navigation problem, Did not go back correctly from selectpipelineactivitytype to opportunity activities")
+        driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+        driver.findElement(xpath: "//p[text()='First Meeting']").click()
+        driver.findElement(linkText: "Back").click()
+        waitFor("//div[text()='First Meeting']", "Navigation problem, Did not go back correctly from newactivity to opportunity activities")
+
+
 
 describe "Create call cycle", ->
   it "Get our week number", ->
@@ -427,11 +482,18 @@ selectDF = (field, order, label) ->
 gocustomer = (custname) ->
     driver.get url + "#/myterritory"
     driver.sleep 500
+    driver.findElement(linkText: "Companies").click()
     driver.findElement(xpath: "//a[div[text()='" + custname + "']]").click()
     driver.wait (->
         driver.isElementPresent(xpath: "//button[@class='selectactivitytype fa fa-plus']")
     ), timeout, "Could not find the customer "
     driver.sleep 500
+
+# Wait for element
+waitFor = (xpathelement, message) ->
+    driver.wait (->
+      driver.isElementPresent(xpath: xpathelement)
+      ), 10000, "\n" + message
 
 ###
 # take a snapshot

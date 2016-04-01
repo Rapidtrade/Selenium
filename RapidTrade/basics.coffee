@@ -71,7 +71,7 @@ describe 'Check Shopping Cart', ->
 
     it "Add 2 bikes to cart", ->
         driver.findElement(id: "quantityBIKE1").clear()
-        driver.findElement(id: "quantityBIKE1").sendKeys "2"
+        driver.findElement(id: "quantityBIKE1").sendKeys "1"
         driver.findElement(id: "quantityBIKE2").clear()
         driver.findElement(id: "quantityBIKE2").sendKeys "2"
         driver.findElement(id: "searchBtn").click()
@@ -79,25 +79,25 @@ describe 'Check Shopping Cart', ->
             driver.isElementPresent(xpath: "//small[text()='BIKE2']")
         ), waittime, "Could not find a BIKE"
 
-    it "Delete BIKE2 from cart", ->
-        driver.findElement(xpath: "//a[contains(.,'Shopping Cart')]").click()
-        driver.wait (->
-            driver.isElementPresent(id: "deleteBIKE2")
-        ), waittime, "Could not find a deleteBIKE2 button"
-        driver.findElement(id: "deleteBIKE2").click()
-        driver.sleep 500
-        driver.isElementPresent(xpath: "//small[contains(text(),'BIKE2')]").then (isPresent) ->
-            expect(isPresent).to.be.false
-
     it "Change a quantity", ->
-        driver.findElement(id: "quantityBIKE1").clear()
-        driver.findElement(id: "quantityBIKE1").sendKeys "2"
+        driver.get url + "#/products/cart"
+        waitFor "//input[@id='cartQtyBIKE1']", "Could not find a deleteBIKE2 button"
+        driver.findElement(id: "cartQtyBIKE1").clear()
+        driver.findElement(id: "cartQtyBIKE1").sendKeys "10"
         #Selenium bug: must go back to pricelist to check grand total :-(
         driver.findElement(linkText: "Search").click()
         driver.findElement(id: "searchBtn").click()
         driver.sleep 500
         driver.findElement(id: "totalexc").getText().then (carttotal) ->
-            expect(carttotal).to.equal("R14,000.00")
+            expect(carttotal).to.equal("R100,000.00")
+    ###
+    it "Delete BIKE2 from cart", ->
+        driver.findElement(xpath: "//a[contains(.,'Shopping Cart')]").click()
+        waitFor "//button[@id='deleteBIKE2']", "Could not find a deleteBIKE2 button"
+        driver.findElement(id: "deleteBIKE2").click()
+        driver.isElementPresent(id: "deleteBIKE2").then (isPresent) ->
+            expect(isPresent).to.be.false
+    ###
 
 describe 'Check Product Details', ->
     it "Search for BIKE1", ->
@@ -216,27 +216,22 @@ describe 'Create Offline Orders', ->
             driver.isElementPresent(id: "deleteBIKE1")
             ), waittime, "could not load basket"
 
-    it "Set display fields for order headers", ->
+    it "Enter order header", ->
         driver.findElement(linkText: "Checkout").click()
         driver.sleep 1000
         driver.findElement(id: "Reference").sendKeys "my reference"
         driver.findElement(id: "offlineBtn").click()
-        driver.wait (->
-            driver.isElementPresent(xpath: "//div[@class='alert alert-warning']")
-            ), waittime, "Offline warning did not appear"
+        waitFor "//div[@class='alert alert-warning ng-binding']", "Offline warning did not appear"
         driver.findElement(linkText: "Save").click()
-        driver.wait (->
-            driver.isElementPresent(xpath: "//div[contains(.,'saved offline')]")
-            ), waittime, "Did not get the correct offline warning"
+        waitFor "//div[contains(.,'saved offline')]", "Did not get success message"
 
     it "Sync to send order", ->
         driver.get url + "#/sync"
         driver.sleep 1000
         driver.findElement(id: "exampleInputPassword1").sendKeys "PASSWORD"
         driver.findElement(linkText: "Synchronize").click()
-        driver.wait (->
-            driver.isElementPresent(xpath: "//td[contains(.,'Sending Orders(1) --OK')]")
-            ), waittime, "Seems order did not go through"
+        waitFor "//td[contains(.,'Sending Orders(1) --OK')]", "Order was not sent during the sync"
+        waitFor "//div[@class='alert ng-scope top-right am-fade alert-success']","Sync did not finish"
 
 describe 'Give rep price', ->
     it "Add bike1 to the cart and change price to R5000.00", ->
@@ -262,7 +257,7 @@ describe 'Give rep price', ->
         driver.findElement(id: "totalexc").getText().then (carttotal) ->
             expect(carttotal).to.equal("R5,000.00")
 
-describe.only 'Give rep discount', ->
+describe 'Give rep discount', ->
     it "Open customer 2, empty basket and click on BIKE2", ->
         driver.sleep pause
         gopricelist "TDD Customer 2"
@@ -374,6 +369,13 @@ gosearch = (searchstr, waitfor) ->
         driver.isElementPresent(xpath: "//small[text()='" + waitfor + "']")
     ), waittime, "Could not find a " + waitfor
     driver.sleep 500
+
+# Wait for element
+waitFor = (xpathelement, message) ->
+    driver.wait (->
+      driver.isElementPresent(xpath: xpathelement)
+      ), 30000, "\n" + message
+
 
 # call this method to go into my territory and search for/select a customer
 gopricelist = (custname) ->

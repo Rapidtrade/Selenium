@@ -21,7 +21,7 @@ before ->
   ), 100000, '\nFailed to load Welcome page.'
   driver.sleep 1000
 
-describe.only "Test 1: Check pricing, does appear for Afgri Dundee", ->
+describe "Test 1: Check pricing, does appear for Afgri Dundee", ->
   it "Create new order and find product AMMUSAMIXBBUZI", ->
     gocustomer("AFGRI DUNDEE")
     goorder("farm 1", "A","A","A","order 1")
@@ -44,6 +44,7 @@ describe.only "Test 1: Check pricing, does appear for Afgri Dundee", ->
     waitFor(id: "GrossTemp", "\nFailed to load jsonform.")
     driver.findElement(id: "GrossTemp").getAttribute("value").then (price)->
         expect(price).to.equal("7101")
+    # driver.isElementPresent(xpath: "//select[@id='depotsDd']/option[91]")
 
   it "Check totals correct after changing price and entering rep discounts", ->
     driver.findElement(id: "Quantity").clear()
@@ -113,7 +114,42 @@ describe.only "Test 1: Check pricing, does appear for Afgri Dundee", ->
     driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[9]/td[2]").getText().then (total)->
       expect(total).to.equal("6,930.06")
 
+describe "Test 2: Check pricing, does not appear for ACUCAREIRA DE MOCAMBIQUE SAR", ->
+    it "Create new order and find product AMMUSAMIXBBUZI", ->
+        gocustomer("ACUCAREIRA DE MOCAMBIQUE SAR")
+        goorder("farm 2", "A","A","A","order 2")
+        gosearch("AMMUSAMIXBBUZI","AMMUSAMIXBBUZI")
 
+    it "Check list price does NOT apprear", ->
+        # Check price does show
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        driver.findElement(id: "TotalExcl").getAttribute("value").then (nett)->
+            expect(nett).to.equal("")
+
+describe.only "Test 3: Get VAT from payor", ->
+    it "Create new order and find product AMMUSAMIXBBUZI", ->
+        gocustomer("HYGROTECH SA(PTY)LTD")
+        goorder("farm 3", "H","H","H","order 3")
+        gosearch("10148FBU","10148FBU")
+
+    it "Check set price to 6600 and check INCL price is 7524", ->
+        # Check price does show
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "(TP"
+        godetails(1,6600,0,0,0,"C",0,0)
+        driver.findElement(id: "TotalIncl").getAttribute("value").then (nett)->
+            expect(nett).to.equal("7524")
+        driver.findElement(linkText: "OK").click()
+        waitFor(id: "product0","Issue adding to cart")
+
+    it "Check shopping cart total is 7524", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("924.00")
 
 describe "Check Kynoch Product Detail for depot selection", ->
     it "Check that Kynoch's detail screen appears, select depot & add to cart", ->
@@ -125,19 +161,7 @@ describe "Check Kynoch Product Detail for depot selection", ->
         driver.findElement(id: "product0").click()
         driver.isElementPresent(xpath: "//select[@id='depotsDd']/option[91]")
 
-describe "Check Kynoch Product Detail for pricing", ->
-    it "Check list price does appear for Afgri Dundee / AMIPLUSGB", ->
-        gocustomer('AFGRI DUNDEE')
-        gosearch "AMIPLUSGB", "AMIPLUSGB"
-        driver.findElement(id: "product0").click()
-        driver.wait (->
-            driver.isElementPresent(id: "depotsDd")
-        ), 10000, "\nFailed to get to get Kynoch product detail screen."
-        driver.findElement(id: "depotsDd").sendKeys "T"
-        driver.sleep 500
-        driver.findElement(id: "Nett").getAttribute("value").then (nett)->
-            expect(nett).to.equal("6782")
-
+describe "Check Kynoch Product Detail for where pricing should not appear", ->
     it "Check list price does NOT appear for Afgri Dundee / AMIPLUSGB", ->
         gocustomer('AFGRI OPERATIONS LTD(PONGOLA)')
         gosearch "AMIPLUSGB", "AMIPLUSGB"
@@ -187,6 +211,25 @@ goorder = (farmname,shipto,payor,billto,payerordernum) ->
   driver.findElement(id: "PayorOrderNumb").sendKeys payerordernum
   driver.findElement(linkText: "Next").click()
   waitFor(id: "searchbox", "Could not start the Kynoch order")
+
+# Enter new product
+godetails = (Quantity, RepGross, UserAmount01, UserAmount02, UserAmount03, UserField05, UserAmount04, UserAmount05) ->
+    waitFor(id: "Quantity","Could not find product or depot")
+    driver.findElement(id: "Quantity").clear()
+    driver.findElement(id: "Quantity").sendKeys Quantity
+    driver.findElement(id: "RepGross").clear()
+    driver.findElement(id: "RepGross").sendKeys RepGross
+    driver.findElement(id: "UserAmount01").clear()
+    driver.findElement(id: "UserAmount01").sendKeys UserAmount01
+    driver.findElement(id: "UserAmount02").clear()
+    driver.findElement(id: "UserAmount02").sendKeys UserAmount02
+    driver.findElement(id: "UserAmount03").clear()
+    driver.findElement(id: "UserAmount03").sendKeys UserAmount03
+    driver.findElement(id: "UserField05").sendKeys UserField05
+    driver.findElement(id: "UserAmount04").clear()
+    driver.findElement(id: "UserAmount04").sendKeys UserAmount04
+    driver.findElement(id: "UserAmount05").clear()
+    driver.findElement(id: "UserAmount05").sendKeys UserAmount05
 
 # Wait for element
 waitFor = (obj, message) ->

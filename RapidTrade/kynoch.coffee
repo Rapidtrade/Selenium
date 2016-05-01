@@ -37,82 +37,42 @@ describe "Test 1: Check pricing, does appear for Afgri Dundee", ->
       return
 
   it "Checking pricing shows in product detail  ", ->
-    # Check price does show
-    driver.findElement(id: "product0").click()
-    waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
-    driver.findElement(id: "depotsDd").sendKeys "("
-    waitFor(id: "GrossTemp", "\nFailed to load jsonform.")
-    driver.findElement(id: "GrossTemp").getAttribute("value").then (price)->
-        expect(price).to.equal("7101")
-    # driver.isElementPresent(xpath: "//select[@id='depotsDd']/option[91]")
+      # Check price does show
+      driver.findElement(id: "product0").click()
+      waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+      driver.findElement(id: "depotsDd").sendKeys "("
+      godetails(1,7000,1,1,10,"R",100,0)
+      driver.findElement(id: "TotalIncl").getAttribute("value").then (nett)->
+          expect(nett).to.equal("7923")
+      driver.findElement(linkText: "OK").click()
+      waitFor(id: "product0","Issue adding to cart")
 
-  it "Check totals correct after changing price and entering rep discounts", ->
-    driver.findElement(id: "Quantity").clear()
-    driver.findElement(id: "Quantity").sendKeys "1"
-    driver.findElement(id: "RepGross").clear()
-    driver.findElement(id: "RepGross").sendKeys "6000"
-    driver.findElement(id: "UserAmount01").clear()
-    driver.findElement(id: "UserAmount01").sendKeys "1"
-    driver.findElement(id: "UserAmount02").clear()
-    driver.findElement(id: "UserAmount02").sendKeys "1"
-    driver.findElement(id: "UserAmount03").clear()
-    driver.findElement(id: "UserAmount03").sendKeys "1"
-    driver.findElement(id: "UserFiedl01").sendKeys "r"
-    driver.findElement(id: "UserAmount04").clear()
-    driver.findElement(id: "UserAmount04").sendKeys "100"
-    driver.findElement(id: "UserAmount05").clear()
-    driver.findElement(id: "UserAmount05").sendKeys "100"
-    driver.findElement(id: "TotalExcl").getAttribute("value").then (nett)->
-        expect(nett).to.equal("6079")
-    driver.findElement(id: "TotalIncl").getAttribute("value").then (nett)->
-        expect(nett).to.equal("6930.06")
-    driver.findElement(linkText: "OK").click()
-
-  it "Check price in pricelist", ->
-    waitFor(id: "productlist", "Could not find pricelist")
-    driver.findElement(id: "totalexc").getText().then (nett)->
-        expect(nett).to.equal("R6,079.00")
-
-  it "Check shopping cart totals", ->
+  it "Check shopping cart line items", ->
     driver.get url + "#/kynochCart"
     driver.sleep 1000
-    driver.findElement(xpath: "//tr[1]/td[15]").getText().then (total)->
-      expect(total).to.equal("R6,079.00")
-    driver.findElement(xpath: "//tr[1]/td[14]").getText().then (total)->
-      expect(total).to.equal("100.00")
-    driver.findElement(xpath: "//tr[1]/td[13]").getText().then (total)->
-      expect(total).to.equal("100.00")
-    driver.findElement(xpath: "//tr[1]/td[12]").getText().then (total)->
-      expect(total).to.equal("Road")
-    driver.findElement(xpath: "//tr[1]/td[11]").getText().then (total)->
-      expect(total).to.equal("1.00")
-    driver.findElement(xpath: "//tr[1]/td[10]").getText().then (total)->
-      expect(total).to.equal("1.00")
-    driver.findElement(xpath: "//tr[1]/td[9]").getText().then (total)->
-      expect(total).to.equal("1.00")
-    driver.findElement(xpath: "//tr[1]/td[6]").getText().then (total)->
-      expect(total).to.equal("1.000")
-    driver.findElement(xpath: "//tr[1]/td[6]").getText().then (total)->
-      expect(total).to.equal("1.000")
+    # Check items
     driver.findElement(xpath: "//tr[1]/td[5]").getText().then (total)->
-      expect(total).to.equal("R6,000.00")
-    #Check totals
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[1]/td[2]").getText().then (total)->
-      expect(total).to.equal("6,000.00")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[2]/td[2]").getText().then (total)->
-      expect(total).to.equal("121.00")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[3]/td[2]").getText().then (total)->
-      expect(total).to.equal("5,879.00")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[4]/td[2]").getText().then (total)->
-      expect(total).to.equal("100.00")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[5]/td[2]").getText().then (total)->
-      expect(total).to.equal("100.00")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[6]/td[2]").getText().then (total)->
-      expect(total).to.equal("6,079.00")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[7]/td[2]").getText().then (total)->
-      expect(total).to.equal("851.06")
-    driver.findElement(xpath: "//table[@class='table table-bordered']/tbody/tr[9]/td[2]").getText().then (total)->
-      expect(total).to.equal("6,930.06")
+        expect(total).to.equal("R7,000.00")
+    driver.findElement(xpath: "//tr[1]/td[9]").getText().then (total)->
+        expect(total).to.equal("1.00")
+    driver.findElement(xpath: "//tr[1]/td[10]").getText().then (total)->
+        expect(total).to.equal("1.00")
+    driver.findElement(xpath: "//tr[1]/td[11]").getText().then (total)->
+        expect(total).to.equal("10.00")
+    driver.findElement(xpath: "//tr[1]/td[13]").getText().then (total)->
+        expect(total).to.equal("100.00")
+    driver.findElement(xpath: "//tr[1]/td[15]").getText().then (total)->
+        expect(total).to.equal("R6,950.00")
+
+  it "Check shopping cart totals", ->
+    driver.findElement(xpath: "//div/table/tbody/tr[3]/td[2]").getText().then (subtotal)->
+        expect(subtotal).to.equal("6,850.00")
+    driver.findElement(xpath: "//div/table/tbody/tr[4]/td[2]").getText().then (transport)->
+        expect(transport).to.equal("100.00")
+    driver.findElement(xpath: "//div/table/tbody/tr[7]/td[2]").getText().then (vat)->
+        expect(vat).to.equal("973.00")
+    driver.findElement(xpath: "//div/table/tbody/tr[9]/td[2]").getText().then (total)->
+        expect(total).to.equal("7,923.00")
 
 describe "Test 2: Check pricing, does not appear for ACUCAREIRA DE MOCAMBIQUE SAR", ->
     it "Create new order and find product AMMUSAMIXBBUZI", ->
@@ -128,8 +88,8 @@ describe "Test 2: Check pricing, does not appear for ACUCAREIRA DE MOCAMBIQUE SA
         driver.findElement(id: "TotalExcl").getAttribute("value").then (nett)->
             expect(nett).to.equal("")
 
-describe.only "Test 3: Get VAT from payor", ->
-    it "Create new order and find product AMMUSAMIXBBUZI", ->
+describe "Test 3: Get VAT from payor", ->
+    it "Create new order and find product 10148FBU", ->
         gocustomer("HYGROTECH SA(PTY)LTD")
         goorder("farm 3", "H","H","H","order 3")
         gosearch("10148FBU","10148FBU")
@@ -145,12 +105,104 @@ describe.only "Test 3: Get VAT from payor", ->
         driver.findElement(linkText: "OK").click()
         waitFor(id: "product0","Issue adding to cart")
 
-    it "Check shopping cart total is 7524", ->
+    it "Check shopping cart vat total is 924.00", ->
         driver.get url + "#/kynochCart"
         driver.sleep 1000
         driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
             expect(vat).to.equal("924.00")
 
+describe "Test 4: Get VAT from sold to", ->
+    it "Create new order and find product 10148FBU", ->
+        gocustomer("BOHLELA D M")
+        goorder("farm 4", "B","C","C","order 4")
+        gosearch("10148FBU","10148FBU")
+
+    it "Check set price to 6600 and check INCL price is 7524", ->
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "(TP"
+        godetails(5,6600,0,0,0,"C",0,0)
+        driver.findElement(id: "TotalIncl").getAttribute("value").then (nett)->
+            expect(nett).to.equal("33000")
+        driver.findElement(linkText: "OK").click()
+        waitFor(id: "product0","Issue adding to cart")
+
+    it "Check shopping cart vat total is 0", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("0.00")
+
+    it "Go back into product detail, change delivery to road and ensure VAT of R140 is charged", ->
+        driver.findElement(xpath: "(//button[@class='btn btn-primary'])[1]").click()
+        waitFor(id: "UserField05","Could not load kynoch details")
+        driver.findElement(id: "UserField05").sendKeys "R"
+        driver.findElement(id: "UserAmount04").clear()
+        driver.findElement(id: "UserAmount04").sendKeys "200"
+        driver.findElement(id: "TotalIncl").getAttribute("value").then (nett)->
+            expect(nett).to.equal("34140")
+        driver.findElement(linkText: "OK").click()
+        driver.sleep 500
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("140.00")
+
+describe "Test 5: Optimiser product", ->
+    it "Create new order and find product 10148FBU", ->
+        gocustomer("Tholo Holdings Pty (Ltd)")
+        goorder("farm 5", "D","T","T","order 5")
+        gosearch("SOYAOFF","SOYAOFF")
+
+    it "Check for error if enter price less than list price", ->
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "(5230"
+        godetails(0.75,3000,0,0,0,"C",0,0)
+        driver.findElement(linkText: "OK").click()
+        waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-danger']", "Did not get error message when ordering less than list")
+        driver.sleep 4000
+
+    it "Check total is 4018.5 with quantity of 0.75", ->
+        godetails(0.75,47000,0,0,0,"C",0,0)
+        driver.findElement(id: "TotalIncl").getAttribute("value").then (nett)->
+            expect(nett).to.equal("40185")
+        driver.findElement(linkText: "OK").click()
+        waitFor(id: "product0","Issue adding to cart")
+
+    it "Check shopping cart vat total is 0", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("4,935.00")
+
+describe.only "Test 6: Full order with shipping/vat calculations", ->
+    it "Create new order and find product 10148FBU", ->
+        gocustomer("DIETANA TRADING & PROJECTS 30")
+        goorder("farm 6", "D","T","T","order 6")
+
+    it "Add first LAN28PB", ->
+        gosearch("LAN28PB","LAN28PB")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "(6"
+        godetails(1,5928.50,0,0,0,"C",0,0)
+        driver.findElement(linkText: "OK").click()
+
+    it "Add 23222BBUZ2", ->
+        gosearch("23222BBUZ2","23222BBUZ2")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "(4"
+        godetails(1,4831,0,0,0,"C",0,0)
+        driver.findElement(linkText: "OK").click()
+
+    it "Check shopping cart total is 0", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("12,265.83")
+
+
+###
 describe "Check Kynoch Product Detail for depot selection", ->
     it "Check that Kynoch's detail screen appears, select depot & add to cart", ->
         gocustomer('AFGRI DUNDEE')
@@ -160,20 +212,7 @@ describe "Check Kynoch Product Detail for depot selection", ->
         gosearch "AMIPLUSGB", "AMIPLUSGB"
         driver.findElement(id: "product0").click()
         driver.isElementPresent(xpath: "//select[@id='depotsDd']/option[91]")
-
-describe "Check Kynoch Product Detail for where pricing should not appear", ->
-    it "Check list price does NOT appear for Afgri Dundee / AMIPLUSGB", ->
-        gocustomer('AFGRI OPERATIONS LTD(PONGOLA)')
-        gosearch "AMIPLUSGB", "AMIPLUSGB"
-        driver.findElement(id: "product0").click()
-        driver.wait (->
-            driver.isElementPresent(id: "depotsDd")
-        ), 10000, "\nFailed to get to get Kynoch product detail screen."
-        driver.findElement(id: "depotsDd").sendKeys "T"
-        driver.sleep 500
-        driver.findElement(id: "Nett").getAttribute("value").then (nett)->
-            expect(nett).to.equal("")
-
+###
 
 # call this method to go into my territory and search for/select a customer
 gocustomer = (custname) ->

@@ -174,7 +174,7 @@ describe "Test 5: Optimiser product", ->
         driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
             expect(vat).to.equal("4,935.00")
 
-describe.only "Test 6: Full order with shipping/vat calculations", ->
+describe "Test 6: Full order with shipping/vat calculations", ->
     it "Create new order and find product 10148FBU", ->
         gocustomer("DIETANA TRADING & PROJECTS 30")
         goorder("farm 6", "D","T","T","order 6")
@@ -201,6 +201,156 @@ describe.only "Test 6: Full order with shipping/vat calculations", ->
         driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
             expect(vat).to.equal("12,265.83")
 
+describe "Test 7: Collect order with non-vat customer", ->
+    it "Create new order and find product 10148FBU", ->
+        gocustomer("CATHRICH NO 70 CC")
+        goorder("farm 7", "C","C","C","order 7")
+
+    it "Add first AMIPLUSGB", ->
+        gosearch("AMIPLUSGB","AMIPLUSGB")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        godetails(3,6738,7,0,0,"C",0,0)
+
+    it "Check total INCL is 18,799.02", ->
+        driver.findElement(id: "TotalIncl").getAttribute("value").then (totalincl)->
+            expect(totalincl).to.equal("18799.02")
+        driver.findElement(linkText: "OK").click()
+
+    it "Check shopping cart total is 18,799.02", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[9]/td[2]/span").getText("value").then (total)->
+            expect(total).to.equal("18,799.02")
+
+describe "Test 8: Get 0% VAT from sold-to, but charge VAT on transport", ->
+    it "Create new order and find product 10148FBU", ->
+        gocustomer("BARWON CC")
+        goorder("farm 8", "B","C","C","order 8")
+
+    it "Add first AMMUSAMIXBBUZI", ->
+        gosearch("AMMUSAMIXBBUZI","AMMUSAMIXBBUZI")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        godetails(8,7101,5,0,0,"R",199,0)
+
+    it "Check product detail total INCL is 18,799.02", ->
+        driver.findElement(id: "TotalIncl").getAttribute("value").then (totalincl)->
+            expect(totalincl).to.equal("55782.48")
+        driver.findElement(linkText: "OK").click()
+        driver.sleep 500
+
+    it "Check shopping cart total is 18,799.02", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("222.88")
+        driver.findElement(xpath: "//table/tbody/tr[9]/td[2]/span").getText("value").then (total)->
+            expect(total).to.equal("55,782.48")
+
+describe.only "Test 9: Mixture of discount/transport costs on 2 items", ->
+    it "Create new order", ->
+        gocustomer("AFGRI DUNDEE")
+        goorder("farm 9", "A","A","A","order 9")
+
+    it "Add 1st AMIPLUSGB with 5% spec discount", ->
+        gosearch("AMIPLUSGB","AMIPLUSGB")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        godetails(1,6822.90,5,0,0,"c",0,0)
+        driver.findElement(linkText: "OK").click()
+        driver.sleep 500
+
+    it "Add 2nd AMIPLUSBSUS with R199 transport", ->
+        gosearch("AMIPLUSBSUS","AMIPLUSBSUS")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        godetails(1,6113.68,0,0,0,"r",199,0)
+        driver.findElement(linkText: "OK").click()
+        driver.sleep 500
+
+    it "Check shopping cart total is 14,585.66", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("1,791.22")
+        driver.findElement(xpath: "//table/tbody/tr[9]/td[2]/span").getText("value").then (total)->
+            expect(total).to.equal("14,585.66")
+
+describe "Test 10: Optimiser/non-optimiser products", ->
+    it "Create new order", ->
+        gocustomer("AFGRI DUNDEE")
+        goorder("farm 10", "A","A","A","order 10")
+
+    it "Add 1st AMIPLUSGB non-optimiser", ->
+        gosearch("AMIPLUSGB","AMIPLUSGB")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        godetails(1,6800,0,0,0,"c",0,0)
+        driver.findElement(linkText: "OK").click()
+        driver.sleep 500
+
+    it "Add 2nd SOYAOFF optimiser", ->
+        gosearch("SOYAOFF","SOYAOFF")
+        driver.findElement(id: "product0").click()
+        waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+        driver.findElement(id: "depotsDd").sendKeys "("
+        godetails(1,35000,0,0,0,"c",0,0)
+        driver.findElement(linkText: "OK").click()
+        driver.sleep 500
+
+    it "Check shopping cart total is 47,652.00", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("5,852.00")
+        driver.findElement(xpath: "//table/tbody/tr[9]/td[2]/span").getText("value").then (total)->
+            expect(total).to.equal("47,652.00")
+
+describe.only "Test 11: Big Order", ->
+    it "Create new order", ->
+        gocustomer("BOHLELA D M")
+        goorder("farm 11", "b","c","c","order 11")
+
+    it "Add 1st AMIPLUSGB ", ->
+        goaddproducttocart("AMIPLUSGB","(",3,6700,0,0,0,"c",0,0,"20100")
+
+    it "Add 2nd AMIPLUSBSUS optimiser, check for total R6100", ->
+        goaddproducttocart("AMIPLUSBSUS","(",1,6100,0,0,0,"c",0,0,"6100")
+
+    it "Add 3rd AMIPLUSBBUS", ->
+        goaddproducttocart("AMIPLUSBBUS","(",2,6150,0,0,0,"r",200,0,"12756")
+
+    it "Add 4th AMIPLUSBBUS, check total is 6411 ", ->
+        goaddproducttocart("AMIPLUSGT","(",1,6240,0,0,0,"r",150,0,"6411")
+
+    it "Add 5th AMMUSAMIXBBUZI, check total is 28623,44 ", ->
+        goaddproducttocart("AMMUSAMIXBBUZI","(",4,7100,0,0,0,"c",0,49,"28623,44")
+
+    it "Add 6th 10148FBU, check total is 6560", ->
+        goaddproducttocart("10148FBU","(",1,6560,0,0,0,"r",150,0,"6560")
+
+    it "Add 7th 10243FFU, check total is 6560", ->
+        goaddproducttocart("10243FFU","(",1,9500,0,0,0,"r",199,35,"9766,76")
+
+    it "Add 8th 31847BFNZIS6, check total is 28494,76", ->
+        goaddproducttocart("31847BFNZIS6","(",2,14000,0,0,0,"r",150,67,"28494,76")
+
+    it "Add 9th ACHILLESFFU, check total is 22121,28", ->
+        goaddproducttocart("ACHILLESFFU","(",3,7050,0,0,0,"r",249,35,"22121,28")
+
+    it "Check shopping cart total is 47,652.00", ->
+        driver.get url + "#/kynochCart"
+        driver.sleep 1000
+        driver.findElement(xpath: "//table/tbody/tr[7]/td[2]/span").getText("value").then (vat)->
+            expect(vat).to.equal("317.24")
+        driver.findElement(xpath: "//table/tbody/tr[9]/td[2]/span").getText("value").then (total)->
+            expect(total).to.equal("140,933.24")
 
 ###
 describe "Check Kynoch Product Detail for depot selection", ->
@@ -269,6 +419,18 @@ godetails = (Quantity, RepGross, UserAmount01, UserAmount02, UserAmount03, UserF
     driver.findElement(id: "UserAmount04").sendKeys UserAmount04
     driver.findElement(id: "UserAmount05").clear()
     driver.findElement(id: "UserAmount05").sendKeys UserAmount05
+
+# Add product to shopping cart & check for valud totalIncl
+goaddproducttocart = (ProductID, Depot, Quantity, RepGross, SpecDisc, CashDisc, RUOMDisc, DeliveryMode, Transport, Handling, TotalIncl) ->
+    gosearch("AMIPLUSGB","AMIPLUSGB")
+    driver.findElement(id: "product0").click()
+    waitFor(id: "depotsDd", "\nFailed to get to get Kynoch product detail screen.")
+    driver.findElement(id: "depotsDd").sendKeys Depot
+    godetails(Quantity, RepGross, SpecDisc, CashDisc, RUOMDisc, DeliveryMode, Transport, Handling)
+    driver.findElement(id: "TotalIncl").getAttribute("value").then (totalincl)->
+        expect(totalincl).to.equal(TotalIncl)
+    driver.findElement(linkText: "OK").click()
+    driver.sleep 500
 
 # Wait for element
 waitFor = (obj, message) ->

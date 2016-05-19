@@ -9,7 +9,7 @@ expect = chai.expect
 before ->
   @timeout = 8000
   global.driver = new selenium.Builder().withCapabilities(selenium.Capabilities.chrome()).build()
-  global.url = "http://localhost/ws/angularcore"
+  global.url = "http://localhost/git/angularcore"
   global.timeout = 20000
   driver.getWindowHandle()
   driver.get url
@@ -256,21 +256,19 @@ describe "Create products", ->
     driver.findElement(id: "CategoryName").sendKeys "MB"
     driver.findElement(id: "VAT").sendKeys "14"
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), timeout, "\nCould not create product 1"
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "Could not save")
+
   it "Create BIKE2", ->
     driver.findElement(linkText: "Back").click()
-    driver.sleep 1000
+    waitFor(id: "exampleInputAmount", "Cant create new product")
     driver.findElement(linkText: "New").click()
     driver.findElement(id: "ProductID").sendKeys "BIKE2"
     driver.findElement(id: "Description").sendKeys "Mountain Bike 2"
     driver.findElement(id: "CategoryName").sendKeys "MB"
     driver.findElement(id: "VAT").sendKeys "14"
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), timeout, "\nCould not create product 2"
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "Could not save")
+
   it "Create BIKE3", ->
     driver.findElement(linkText: "Back").click()
     driver.sleep 1000
@@ -283,6 +281,7 @@ describe "Create products", ->
     driver.wait (->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), timeout, "\nCould not create product 3"
+
   it "Create BIKE4", ->
     driver.findElement(linkText: "Back").click()
     driver.sleep 1000
@@ -347,21 +346,25 @@ describe "Create Pricelist", ->
     driver.get url + "/#/prices/A"
     #wait for alert to disappear
     driver.sleep 4000
+
   it "Create price for Bike 1", ->
     driver.findElement(id: "newProduct").sendKeys "BIKE1"
     driver.findElement(id: "newPrice").sendKeys "8000"
     driver.findElement(id: "addPrice").click()
     driver.sleep 500
+
   it "Create price for Bike 2", ->
     driver.findElement(id: "newProduct").sendKeys "BIKE2"
     driver.findElement(id: "newPrice").sendKeys "10000"
     driver.findElement(id: "addPrice").click()
     driver.sleep 500
+
   it "Create price for Bike 3", ->
     driver.findElement(id: "newProduct").sendKeys "BIKE3"
     driver.findElement(id: "newPrice").sendKeys "11000"
     driver.findElement(id: "addPrice").click()
     driver.sleep 500
+
   it "Create price for Bike 4", ->
     driver.findElement(id: "newProduct").sendKeys "BIKE4"
     driver.findElement(id: "newPrice").sendKeys "12000"
@@ -376,15 +379,11 @@ describe "Create Pricelist", ->
 describe "Discount Values", ->
   it "Group/Product Prices", ->
     driver.get url + "/#/dv/"
-    driver.sleep 1000
+    waitFor(xpath: "//a[div/div='AccountGroup']", "Could not find account group")
     driver.findElement(xpath: "//a[div/div='AccountGroup']").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//a[div/div='Big Stores']")
-    ), timeout, "\nBig Stores did not arrive"
+    waitFor(xpath: "//a[div/div='Big Stores']", "\nBig Stores did not arrive")
     driver.findElement(xpath: "//a[div/div='Big Stores']").click()
-    driver.wait (->
-      driver.isElementPresent(linkText: "Group Price")
-    ), timeout, "Tab did not appear"
+    waitFor(linkText: "Group Price", "Tab did not appear")
     driver.findElement(id: "productid").sendKeys "BIKE1"
     driver.findElement(id: "qtylow").sendKeys "0"
     driver.findElement(id: "qtyhigh").sendKeys "9999"
@@ -392,21 +391,15 @@ describe "Discount Values", ->
     driver.findElement(id: "addBtn").click()
     driver.sleep 500
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), timeout, "Could not save discount values"
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "Could not save discount values")
 
   it "Customer/Product Prices", ->
     driver.get url + "/#/dv/"
-    driver.sleep 1000
+    waitFor(xpath: "//a[div/div='AccountID']", "\TDD1 did not arrive")
     driver.findElement(xpath: "//a[div/div='AccountID']").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//a[div/div='TDD1']")
-    ), timeout, "\TDD1 did not arrive"
+    waitFor(xpath: "//a[div/div='TDD1']", "Could not find customer")
     driver.findElement(xpath: "//a[div/div='TDD1']").click()
-    driver.wait (->
-      driver.isElementPresent(linkText: "Account Price")
-    ), timeout, "Tab did not appear"
+    waitFor(linkText: "Account Price", "Tab did not appear")
     driver.findElement(id: "productid").sendKeys "BIKE1"
     driver.findElement(id: "qtylow").sendKeys "0"
     driver.findElement(id: "qtyhigh").sendKeys "9999"
@@ -414,11 +407,9 @@ describe "Discount Values", ->
     driver.findElement(id: "addBtn").click()
     driver.sleep 500
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-    ), timeout, "\nCould not create discountvalue"
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nCould not create discountvalue")
 
-describe.only "Promotions", ->
+describe "Promotions", ->
   it "Promo Details", ->
     driver.get url + "#/promo"
     driver.sleep 1000
@@ -533,6 +524,11 @@ describe "Day End Activities", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
       ), timeout, "\nCould not create Marketing"
 
+# Wait for element
+waitFor = (obj, message) ->
+    driver.wait (->
+      driver.isElementPresent(obj)
+      ), 30000, "\n" + message
 
 screenshot = (step) ->
   driver.takeScreenshot().then (image, err) ->

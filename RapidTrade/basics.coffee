@@ -5,7 +5,6 @@ chai = require 'chai'
 chai.use require 'chai-as-promised'
 expect = chai.expect
 
-
 before ->
   global.driver = new selenium.Builder().withCapabilities(selenium.Capabilities.chrome()).build()
   global.url = "http://localhost/git/rapidtrade"
@@ -35,7 +34,7 @@ describe 'Reset TDD Rapidtargets data', ->
       driver.isElementPresent(id: 'successmsg')
     ), 10000, '\nFailed to reset data.'
 ###
-describe 'Test searching pricelist', ->
+describe.only 'Test searching pricelist', ->
     it "Search for bikes", ->
         driver.sleep pause
         gopricelist "TDD Customer 2"

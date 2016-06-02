@@ -34,9 +34,9 @@ describe 'Reset TDD Rapidtargets data', ->
     driver.wait ( ->
       driver.isElementPresent(id: 'successmsg')
     ), timeout, '\nFailed to reset data.'
-###
+
 describe.only "Checking Group's", ->
-  it.only "Create a group", ->
+  it "Create a group", ->
     driver.get url + "#/groups"
     driver.sleep 500
     driver.findElement(linkText: "Create Group").click()
@@ -46,19 +46,21 @@ describe.only "Checking Group's", ->
     driver.findElement(id: "Tel").sendKeys "082 121 1211"
     driver.findElement(id: "Area").sendKeys "Joburg"
     driver.findElement(linkText: "Save").click()
-    waitFor(id: "name", "\nFailed to create group")
+    driver.sleep 3000
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nFailed to create group")
 
-  it "Invite user", ->
+  it "Goto members", ->
     driver.get url + "#/groups"
-    driver.wait (->
-      driver.isElementPresent(xpath: "//a/div[contains(.,'Joburg')]")
-    ), timeout, '\nFailed to create group'
+    waitFor(xpath: "//a/div[contains(.,'Joburg')]","Could not find Joburg reps")
     driver.findElement(xpath: "//a/div[contains(.,'Joburg')]").click()
-    driver.sleep 500
+    waitFor(linkText: "Members","Could not find members link")
+    driver.sleep 5000
     driver.findElement(linkText: "Members").click()
-    driver.sleep 500
+    waitFor(linkText: "Invite people to your group","Could not find invite link")
+
+  it "Invite popup", ->
     driver.findElement(linkText: "Invite people to your group").click()
-    driver.sleep 1000
+    waitFor(id: "UserID","could not find popup")
     driver.findElement(id: "UserID").sendKeys "TDD2"
     driver.findElement(xpath: "//button[@class='btn btn-success ng-binding']").click()
     waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nFailed to invite user")
@@ -76,7 +78,7 @@ describe.only "Checking Group's", ->
     driver.wait (->
       driver.isElementPresent(xpath: "//div[contains(text(),'hello world')]")
       ), timeout, "\nFailed to create message"
-###
+
 describe "Companies", ->
     it "Create a new company and set displayfields", ->
         driver.get url + "#/myterritory"
@@ -152,7 +154,7 @@ describe "Activities", ->
         gocustomer('TDD Customer 1')
         driver.findElement(xpath: "//button[@class='selectactivitytype']").click()
         driver.sleep 500
-        driver.findElement(xpath: "//a[p='Cold Call'][1]").click()
+        driver.findElement(xpath: "//a[p='First Meeting'][1]").click()
         driver.sleep 500
         driver.findElement(id: "note").sendKeys "Looks like a good company"
         driver.findElement(id: "newBtn").click()
@@ -171,17 +173,17 @@ describe "Activities", ->
     it "Check activity details are remembered and save the activity", ->
         driver.sleep 4000
         driver.findElement(id: "Opportunity").getAttribute("value").then (opp)->
-            expect(opp).to.equal("string:Rapid Sales")
+            expect(opp).to.not.equal("")
         driver.findElement(id: "contacts").sendKeys "a"
         driver.findElement(linkText: "Save").click()
         waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nCould not create activity")
-        driver.sleep 1000
+        driver.sleep 4000
 
     it "Check percentage", ->
         driver.get url + "#/history/opportunities/TDD1"
         driver.sleep 1000
         driver.findElement(xpath: "//div[text()='Rapid Sales']/following-sibling::div[4]").getText().then (percent) ->
-          expect(percent).to.be.equal("10%")
+          expect(percent).to.be.equal("30%")
 
 describe "Check Opportunities", ->
   it "Check listing in my territory", ->
@@ -208,14 +210,12 @@ describe "Check Opportunities", ->
   it "Create pipeline activity" , ->
     driver.findElement(xpath: "//a[p[text()='First Meeting']]").click()
     driver.findElement(id: "note").sendKeys "First meeting went well"
-    driver.findElement(id: "Opportunity").getAttribute('value').then (text) ->
-      expect(text).to.contain("Rapid Sales")
+    driver.findElement(id: "Opportunity").getAttribute('value').then (opp) ->
+      expect(opp).to.not.equal("")
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create activity"
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nCould not create activity")
 
-describe.only "Check navigation in history", ->
+describe "Check navigation in history", ->
     it "Check activities -> Activity -> activities" , ->
         gocustomer('TDD Customer 1')
         driver.findElement(linkText: "History").click()
@@ -227,10 +227,10 @@ describe.only "Check navigation in history", ->
 
     it "Check opportunities -> activities -> NEW -> activities -> opportunities" , ->
         driver.sleep 500
-        driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+        driver.findElement(xpath: "//button[@class='selectactivitytype']").click()
         driver.findElement(linkText: "Back").click()
         waitFor(xpath: "//div[text()='Checkin']","Navigation problem, Activities did not display after back from selectactivitytype")
-        driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
+        driver.findElement(xpath: "//button[@class='selectactivitytype']").click()
         driver.findElement(xpath: "//p[text()='First Meeting']").click()
         driver.findElement(linkText: "Back").click()
         waitFor(xpath: "//div[text()='Checkin']","Navigation problem, Activities did not display after back from NEW activity")
@@ -268,8 +268,6 @@ describe.only "Check navigation in history", ->
         driver.findElement(xpath: "//p[text()='First Meeting']").click()
         driver.findElement(linkText: "Back").click()
         waitFor(xpath: "//div[text()='First Meeting']", "Navigation problem, Did not go back correctly from newactivity to opportunity activities")
-
-
 
 describe "Create call cycle", ->
   it "Get our week number", ->
@@ -325,22 +323,17 @@ describe "Check Today Screen", ->
     driver.isElementPresent(xpath: "//h4[text()='TDD Customer 2']")
 
   it "Create an activity and check customer is ticked", ->
-    driver.sleep 4000
-    driver.findElement(xpath: "//a[h4[text()='TDD Customer 1']]").click()
-    driver.sleep 500
-    driver.findElement(xpath: "//button[@class='selectactivitytype fa fa-plus']").click()
-    driver.sleep 500
+    waitFor(xpath: "//a[h4[text()='TDD1']]", "Could not find Customer 1")
+    driver.findElement(xpath: "//a[h4[text()='TDD2']]").click()
+    waitFor(xpath: "//button[@class='selectactivitytype']", "Could not find + button")
+    driver.findElement(xpath: "//button[@class='selectactivitytype']").click()
+    waitFor(xpath: "//a[p[text()='Checkin']]", "Could not find checkin activity type")
     driver.findElement(xpath: "//a[p[text()='Checkin']]").click()
     driver.findElement(id: "note").sendKeys "Checking today screen"
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
-      ), 10000, "\nCould not create activity"
+    waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nCould not create activity")
     driver.findElement(linkText: "Back").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//ul/a")
-      ), timeout, "could not get back to today screen"
-    #Check customer is ticked
+    waitFor(xpath: "//ul/a",  "could not get back to today screen")
     driver.isElementPresent(xpath: "//a[1]/span[@class='fa fa-check-square-o pull-left']")
 
 describe "Check Leaderboard", ->
@@ -360,7 +353,7 @@ describe "Check Leaderboard", ->
 describe "Test highlighting of activities", ->
   it "Create activity", ->
     gocustomer('TDD Customer 2')
-    driver.findElement(xpath: "//a/button[@class='selectactivitytype fa fa-plus']").click()
+    driver.findElement(xpath: "//button[@class='selectactivitytype']").click()
     driver.sleep 500
     driver.findElement(xpath: "//a[p='Cold Call'][1]").click()
     driver.sleep 500

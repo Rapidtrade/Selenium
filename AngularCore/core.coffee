@@ -64,14 +64,12 @@ describe 'Admin Tests 1', ->
   it "Create options", ->
     driver.get url + "/#/options/"
     driver.findElement(linkText: "New Option").click()
-    driver.findElement(id: "Name").sendKeys "CurrencyFormat"
+    driver.findElement(id: "Name").sendKeys "CanChangeDiscount"
     driver.findElement(id: "Group").sendKeys "Online"
-    driver.findElement(id: "Value").sendKeys "NZD"
+    driver.findElement(id: "Value").sendKeys "true"
     driver.findElement(id: "Type").sendKeys "T"
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(xpath: "//div[@class='alert alert-success ng-binding ng-scope']")
-    ), timeout, "\nFailed to create option"
+    waitfor(xpath: "//div[@class='alert alert-success ng-binding ng-scope']","\nFailed to create option")
 
   it "Create User Exit", ->
     driver.get url + "/#/userexit/"
@@ -185,11 +183,12 @@ describe 'Discount GP Conditions', ->
     driver.findElement(id: "DiscountID").sendKeys "GP"
     driver.findElement(id: "Name").sendKeys "Group Price"
     driver.findElement(id: "Type").sendKeys "p"
-    driver.findElement(id: "SortOrder").sendKeys "1"
+    driver.findElement(id: "SortOrder").sendKeys "2"
+    driver.findElement(id: "SkipRest").click()
+    driver.findElement(id: "OverwriteDiscount").click()
     driver.findElement(linkText: "Save").click()
-    driver.wait (->
-      driver.isElementPresent(linkText: "Discount Conditions")
-    ), timeout, '\nFailed to create Discount'
+    waitFor(linkText: "Discount Conditions", "\nFailed to create Discount")
+    driver.sleep 4000
 
   it "Create account condition", ->
     driver.findElement(linkText: "Discount Conditions").click()
@@ -221,6 +220,8 @@ describe 'Discount AP Conditions', ->
     driver.findElement(id: "Name").sendKeys "Account Price"
     driver.findElement(id: "Type").sendKeys "p"
     driver.findElement(id: "SortOrder").sendKeys "1"
+    driver.findElement(id: "SkipRest").click()
+    driver.findElement(id: "OverwriteDiscount").click()
     driver.findElement(linkText: "Save").click()
     driver.wait (->
       driver.isElementPresent(linkText: "Discount Conditions")
@@ -376,7 +377,7 @@ describe "Create Pricelist", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
     ), timeout, "\nCould not save pricelist"
 
-describe "Discount Values", ->
+describe.only "Discount Values", ->
   it "Group/Product Prices", ->
     driver.get url + "/#/dv/"
     waitFor(xpath: "//a[div/div='AccountGroup']", "Could not find account group")
@@ -389,14 +390,16 @@ describe "Discount Values", ->
     driver.findElement(id: "qtyhigh").sendKeys "9999"
     driver.findElement(id: "pricebox").sendKeys "7000"
     driver.findElement(id: "addBtn").click()
-    driver.sleep 500
+    waitFor(xpath:"//div[@class='alert ng-scope top-right am-fade alert-warning']","Did not get warning")
+    driver.sleep 4000
     driver.findElement(linkText: "Save").click()
     waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "Could not save discount values")
+    driver.sleep 4000
 
   it "Customer/Product Prices", ->
     driver.get url + "/#/dv/"
     waitFor(xpath: "//a[div/div='AccountID']", "\TDD1 did not arrive")
-    driver.findElement(xpath: "//a[div/div='AccountID']").click()
+    driver.findElement(xpath: "(//a[div/div='AccountID'])[1]").click()
     waitFor(xpath: "//a[div/div='TDD1']", "Could not find customer")
     driver.findElement(xpath: "//a[div/div='TDD1']").click()
     waitFor(linkText: "Account Price", "Tab did not appear")

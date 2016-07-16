@@ -413,12 +413,12 @@ describe.only "Discount Values", ->
     waitFor(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']", "\nCould not create discountvalue")
 
 describe "Promotions", ->
-  it "Promo Details", ->
+  it "ZZZ10FOR1", ->
     driver.get url + "#/promo"
     driver.sleep 1000
     driver.findElement(linkText: "New Promotion").click()
     driver.findElement(id: "promoID").sendKeys "ZZZ10FOR1"
-    driver.findElement(id: "Description").sendKeys "Buy 10 get one free"
+    driver.findElement(id: "Description").sendKeys "BIG Buy 10 MB get one BIKE1 free"
     driver.findElement(id: "endDate").clear()
     driver.findElement(id: "endDate").sendKeys "2016-12-01"
     # Details
@@ -461,6 +461,7 @@ describe "Promotions", ->
       ), timeout, "\nCould not find bike1"
     driver.findElement(xpath: "//a[div='BIKE1']").click()
     driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+    # save
     driver.sleep 500
     driver.findElement(linkText: "Save").click()
     driver.wait (->
@@ -468,6 +469,136 @@ describe "Promotions", ->
     ), timeout, "\nCould not create discountvalue"
     #screenshot "Promotions"
 
+    it "ZZZRB3FOR10PCT", ->
+      driver.get url + "#/promo"
+      driver.sleep 1000
+      driver.findElement(linkText: "New Promotion").click()
+      driver.findElement(id: "promoID").sendKeys "ZZZRB3FOR10PCT"
+      driver.findElement(id: "Description").sendKeys "ALL Buy 3 RB get 10"
+      driver.findElement(id: "endDate").clear()
+      driver.findElement(id: "endDate").sendKeys "2016-12-01"
+      # Details
+      driver.findElement(linkText: "Details").click()
+      driver.findElement(id: "pmode").sendKeys "Buy X get y%"
+      driver.findElement(id: "BuyQty").sendKeys "3"
+      driver.findElement(id: "Discount").sendKeys "10"
+      driver.findElement(id: "noOtherDiscounts").click()
+      # Account condition
+      driver.findElement(linkText: "Account Condition").click()
+      driver.findElement(id: "objpropAC").sendKeys "All"
+      driver.sleep 500
+      # Product condition
+      driver.findElement(linkText: "Product Condition").click()
+      driver.findElement(id: "objpropPC").sendKeys "Ca"
+      driver.findElement(id: "prodSearch").click()
+      driver.sleep 500
+      driver.findElement(id: "search").clear()
+      driver.findElement(id: "search").sendKeys "rb"
+      driver.findElement(id: "searchbtn").click()
+      driver.sleep 2000
+      driver.findElement(xpath: "//a[div='RB']").click()
+      driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+      driver.sleep 500
+      # Save
+      driver.sleep 500
+      driver.findElement(linkText: "Save").click()
+      driver.wait (->
+        driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      ), timeout, "\nCould not create discountvalue"
+
+  it "ZZZ3BIKE12FOR10PCT", ->
+      driver.get url + "#/promo"
+        driver.sleep 1000
+        driver.findElement(linkText: "New Promotion").click()
+        driver.findElement(id: "promoID").sendKeys "ZZZ3BIKE12FOR10PCT"
+        driver.findElement(id: "Description").sendKeys "ALL By 3 BIKE1/BIKE2 get 10 discount"
+        driver.findElement(id: "endDate").clear()
+        driver.findElement(id: "endDate").sendKeys "2016-12-01"
+        # Details
+        driver.findElement(linkText: "Details").click()
+        driver.findElement(id: "pmode").sendKeys "Buy X get y%"
+        driver.findElement(id: "BuyQty").sendKeys "3"
+        driver.findElement(id: "Discount").sendKeys "10"
+        driver.findElement(id: "noOtherDiscounts").click()
+        # Account condition
+        driver.findElement(linkText: "Account Condition").click()
+        driver.findElement(id: "objpropAC").sendKeys "All"
+        driver.sleep 500
+        # Product condition
+        driver.findElement(linkText: "Product Condition").click()
+        driver.findElement(id: "objpropPC").sendKeys "Pr"
+        driver.findElement(id: "prodSearch").click()
+        driver.sleep 500
+        driver.findElement(id: "search").clear()
+        driver.findElement(id: "search").sendKeys "bike"
+        driver.findElement(id: "searchbtn").click()
+        driver.sleep 2000
+        driver.findElement(xpath: "//a[div='BIKE1']").click()
+        driver.findElement(xpath: "//a[div='BIKE2']").click()
+        driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+        # Save
+        driver.sleep 500
+        driver.findElement(linkText: "Save").click()
+        driver.wait (->
+          driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+        ), timeout, "\nCould not create discountvalue"
+        #screenshot "Promotions"
+    it "ZZZSML5FOR1", ->
+        driver.get url + "#/promo"
+        driver.sleep 1000
+        driver.findElement(linkText: "New Promotion").click()
+        driver.findElement(id: "promoID").sendKeys "ZZZSML5FOR1"
+        driver.findElement(id: "Description").sendKeys "Small Stores Buy 5 BIKE1 get 1 free"
+        driver.findElement(id: "endDate").clear()
+        driver.findElement(id: "endDate").sendKeys "2016-12-01"
+        # Details
+        driver.findElement(linkText: "Details").click()
+        driver.findElement(id: "pmode").sendKeys "B"
+        driver.findElement(id: "BuyQty").sendKeys "10"
+        driver.findElement(id: "FreeQty").sendKeys "1"
+        driver.findElement(id: "notAllowedWithDeal").click()
+        # Account condition
+        driver.findElement(linkText: "Account Condition").click()
+        driver.findElement(id: "objpropAC").sendKeys "AccountGroup"
+        driver.findElement(xpath: "//button[@class='btn btn-primary ng-binding']").click()
+        driver.sleep 500
+        driver.findElement(id: "search").sendKeys "bi"
+        driver.findElement(id: "searchbtn").click()
+        driver.sleep 1000
+        driver.findElement(xpath: "//a[div='Small Stores']").click()
+        driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+        driver.sleep 500
+        # Product condition
+        driver.findElement(linkText: "Product Condition").click()
+        driver.findElement(id: "objpropPC").sendKeys "Ca"
+        driver.findElement(id: "prodSearch").click()
+        driver.sleep 500
+        driver.findElement(id: "search").clear()
+        driver.findElement(id: "search").sendKeys "p"
+        driver.findElement(id: "searchbtn").click()
+        driver.sleep 2000
+        driver.findElement(xpath: "//a[div='BIKE1']").click()
+        driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+        driver.sleep 500
+        # Free products
+        driver.findElement(linkText: "Free Items").click()
+        driver.findElement(id: "freeProdBtn").click()
+        driver.sleep 500
+        driver.findElement(id: "search").clear()
+        driver.findElement(id: "search").sendKeys "bike"
+        driver.findElement(id: "searchbtn").click()
+        driver.wait (->
+            driver.isElementPresent(xpath: "//a[div='BIKE1']")
+            ), timeout, "\nCould not find bike1"
+        driver.findElement(xpath: "//a[div='BIKE1']").click()
+        driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+        # save
+        driver.sleep 500
+        driver.findElement(linkText: "Save").click()
+        driver.wait (->
+            driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+        ), timeout, "\nCould not create discountvalue"
+        #screenshot "Promotions"
 
 describe "Day End Activities", ->
   it "Create Marketing", ->

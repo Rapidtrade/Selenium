@@ -35,7 +35,7 @@ describe 'Reset TDD Rapidtargets data', ->
       driver.isElementPresent(id: 'successmsg')
     ), timeout, '\nFailed to reset data.'
 
-describe.only "Checking Group's", ->
+describe "Checking Group's", ->
   it "Create a group", ->
     driver.get url + "#/groups"
     driver.sleep 500

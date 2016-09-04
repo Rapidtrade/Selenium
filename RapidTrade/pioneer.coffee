@@ -42,8 +42,65 @@ describe 'Test stock controller', ->
 
     it "Check replenish proposal has increased delivery quantities", ->
         # check that delivery quantities have increased due to the new delivery
-        # 
         # save the replenishment
+
+describe 'Test driver GRV', ->
+    it "Create test deliveries, then a replenishment for today for routes TDD1", ->
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_replenish_clear&supplierid=%27pioneer%27&routeid=%27TDD1%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_delivery_create&supplierid=%27pioneer%27&routeid=%27TDD1%27&AccountID=%27162291608025984%27&Reference=%27INV211%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_delivery_create&supplierid=%27pioneer%27&routeid=%27TDD1%27&AccountID=%27162352211253236%27&Reference=%27INV212%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_replenish_create&supplierid=%27pioneer%27&routeid=%27TDD1%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+
+    it "Driver selects route", ->
+        # Driver must go into delivery screen, should have one route on screen and should click on it.
+        # Assert that 2 routes dont show on screen
+
+    it "Driver accepts GRV and Load", ->
+        # click on yellow icon and the GRV view should appear
+        # assert that the quantities are correct
+        # driver should click the accept button
+        # assert that the green truck now appears as the icon for the route
+
+    it "Driver views the deliveries", ->
+        # click on the route to see the deliveries
+        # assert that we have 2 deliveries on screen
+        # assert that trucks are green
+
+    it "Check stock controller can no longer create replenishments for those deliverues"
+        # go back to stock controller screen
+        # choose TDD1 route
+        # assert nothing is proposed for replenishment values have come through
+
+describe.only 'Test driver POD', ->
+    it "Create test deliveries, replenishment & GRV for today for routes TDD1", ->
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_replenish_clear&supplierid=%27PIONEER%27&routeid=%27TDD1%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_delivery_create&supplierid=%27PIONEER%27&routeid=%27TDD1%27&AccountID=%27162291608025984%27&Reference=%27INV211%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_delivery_create&supplierid=%27PIONEER%27&routeid=%27TDD1%27&AccountID=%27162352211253236%27&Reference=%27INV212%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_replenish_create&supplierid=%27PIONEER%27&routeid=%27TDD1%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+        driver.get "http://api.rapidtrade.biz/rest/Get?method=tdd_grv_create&supplierid=%27PIONEER%27&routeid=%27TDD1%27&DriverID=%27PDRIVER1%27"
+        waitFor(xpath: "/html/body/pre","Did not get a result")
+
+    it "Sync so that our days stock comes down", ->
+        # perform sync and ensure usp_vanstock_sync4 routeNumbers
+
+    it "Go to my deliveries", ->
+        # go to my deliveries
+        # choose today and click submit
+        # should have one route and assert has green trucks
+        # assert 2 deliveries
+
+    it "Deliver INV211", ->
+        # Click on INV211
+        #
+
 
 
 

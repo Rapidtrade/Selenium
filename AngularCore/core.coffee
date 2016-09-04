@@ -35,7 +35,7 @@ describe 'Reset TDD data', ->
       driver.isElementPresent(id: 'successmsg')
     ), timeout, '\nFailed to reset data.'
 
-describe 'Admin Tests 1', ->
+describe.only 'Admin Tests 1', ->
   it "Create manager", ->
     driver.get url + "/#/users/"
     driver.findElement(linkText: "New").click()
@@ -69,7 +69,7 @@ describe 'Admin Tests 1', ->
     driver.findElement(id: "Value").sendKeys "true"
     driver.findElement(id: "Type").sendKeys "T"
     driver.findElement(linkText: "Save").click()
-    waitfor(xpath: "//div[@class='alert alert-success ng-binding ng-scope']","\nFailed to create option")
+    waitFor(xpath: "//div[@class='alert alert-success ng-binding ng-scope']","\nFailed to create option")
 
   it "Create User Exit", ->
     driver.get url + "/#/userexit/"
@@ -377,7 +377,7 @@ describe "Create Pricelist", ->
       driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
     ), timeout, "\nCould not save pricelist"
 
-describe.only "Discount Values", ->
+describe "Discount Values", ->
   it "Group/Product Prices", ->
     driver.get url + "/#/dv/"
     waitFor(xpath: "//a[div/div='AccountGroup']", "Could not find account group")
@@ -507,7 +507,7 @@ describe "Promotions", ->
       ), timeout, "\nCould not create discountvalue"
 
   it "ZZZ3BIKE12FOR10PCT", ->
-      driver.get url + "#/promo"
+        driver.get url + "#/promo"
         driver.sleep 1000
         driver.findElement(linkText: "New Promotion").click()
         driver.findElement(id: "promoID").sendKeys "ZZZ3BIKE12FOR10PCT"

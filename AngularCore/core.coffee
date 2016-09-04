@@ -507,42 +507,42 @@ describe "Promotions", ->
       ), timeout, "\nCould not create discountvalue"
 
   it "ZZZ3BIKE12FOR10PCT", ->
-        driver.get url + "#/promo"
-        driver.sleep 1000
-        driver.findElement(linkText: "New Promotion").click()
-        driver.findElement(id: "promoID").sendKeys "ZZZ3BIKE12FOR10PCT"
-        driver.findElement(id: "Description").sendKeys "ALL By 3 BIKE1/BIKE2 get 10 discount"
-        driver.findElement(id: "endDate").clear()
-        driver.findElement(id: "endDate").sendKeys "2016-12-01"
-        # Details
-        driver.findElement(linkText: "Details").click()
-        driver.findElement(id: "pmode").sendKeys "Buy X get y%"
-        driver.findElement(id: "BuyQty").sendKeys "3"
-        driver.findElement(id: "Discount").sendKeys "10"
-        driver.findElement(id: "noOtherDiscounts").click()
-        # Account condition
-        driver.findElement(linkText: "Account Condition").click()
-        driver.findElement(id: "objpropAC").sendKeys "All"
-        driver.sleep 500
-        # Product condition
-        driver.findElement(linkText: "Product Condition").click()
-        driver.findElement(id: "objpropPC").sendKeys "Pr"
-        driver.findElement(id: "prodSearch").click()
-        driver.sleep 500
-        driver.findElement(id: "search").clear()
-        driver.findElement(id: "search").sendKeys "bike"
-        driver.findElement(id: "searchbtn").click()
-        driver.sleep 2000
-        driver.findElement(xpath: "//a[div='BIKE1']").click()
-        driver.findElement(xpath: "//a[div='BIKE2']").click()
-        driver.findElement(xpath: "//button[@class='btn btn-default']").click()
-        # Save
-        driver.sleep 500
-        driver.findElement(linkText: "Save").click()
-        driver.wait (->
-          driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
+      driver.get url + "#/promo"
+      driver.sleep 1000
+      driver.findElement(linkText: "New Promotion").click()
+      driver.findElement(id: "promoID").sendKeys "ZZZ3BIKE12FOR10PCT"
+      driver.findElement(id: "Description").sendKeys "ALL By 3 BIKE1/BIKE2 get 10 discount"
+      driver.findElement(id: "endDate").clear()
+      driver.findElement(id: "endDate").sendKeys "2016-12-01"
+      # Details
+      driver.findElement(linkText: "Details").click()
+      driver.findElement(id: "pmode").sendKeys "Buy X get y%"
+      driver.findElement(id: "BuyQty").sendKeys "3"
+      driver.findElement(id: "Discount").sendKeys "10"
+      driver.findElement(id: "noOtherDiscounts").click()
+      # Account condition
+      driver.findElement(linkText: "Account Condition").click()
+      driver.findElement(id: "objpropAC").sendKeys "All"
+      driver.sleep 500
+      # Product condition
+      driver.findElement(linkText: "Product Condition").click()
+      driver.findElement(id: "objpropPC").sendKeys "Pr"
+      driver.findElement(id: "prodSearch").click()
+      driver.sleep 500
+      driver.findElement(id: "search").clear()
+      driver.findElement(id: "search").sendKeys "bike"
+      driver.findElement(id: "searchbtn").click()
+      driver.sleep 2000
+      driver.findElement(xpath: "//a[div='BIKE1']").click()
+      driver.findElement(xpath: "//a[div='BIKE2']").click()
+      driver.findElement(xpath: "//button[@class='btn btn-default']").click()
+      # Save
+      driver.sleep 500
+      driver.findElement(linkText: "Save").click()
+      driver.wait (->
+        driver.isElementPresent(xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']")
         ), timeout, "\nCould not create discountvalue"
-        #screenshot "Promotions"
+      #screenshot "Promotions"
     it "ZZZSML5FOR1", ->
         driver.get url + "#/promo"
         driver.sleep 1000

@@ -30,6 +30,10 @@ describe 'Test stock controller', ->
         waitFor(xpath: "/html/body/pre","Did not get a result")
 
     it "Choose route WC1", ->
+        driver.get url + "#/replenish"
+
+        driver.findElement(xpath: "//div[text()='TDD1']").click()
+        # //div[text()='TDD1']
         # add tests here to log in as stock controller, go to #/replenish and choose the WC1 route
         # assert that 2 deliveries are displayed
 

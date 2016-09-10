@@ -1,2 +1,6 @@
 
 tags
+
+RapidTrade/node_modules/*
+node_modules/*
+*.xml

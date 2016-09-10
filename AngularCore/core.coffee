@@ -35,7 +35,7 @@ describe 'Reset TDD data', ->
       driver.isElementPresent(id: 'successmsg')
     ), timeout, '\nFailed to reset data.'
 
-describe.only 'Admin Tests 1', ->
+describe 'Create Users', ->
   it "Create manager", ->
     driver.get url + "/#/users/"
     driver.findElement(linkText: "New").click()
@@ -71,6 +71,7 @@ describe.only 'Admin Tests 1', ->
     driver.findElement(linkText: "Save").click()
     waitFor(xpath: "//div[@class='alert alert-success ng-binding ng-scope']","\nFailed to create option")
 
+describe.only 'Create User Exit & Tree', ->
   it "Create User Exit", ->
     driver.get url + "/#/userexit/"
     driver.findElement(linkText: "New").click()

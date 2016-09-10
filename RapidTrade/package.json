@@ -1,0 +1,15 @@
+{
+    "name": "converter",
+      "version": "0.0.0",
+      "description": "Required files",
+      "main": "index.js",
+      "scripts": {
+        "test": "./node_modules/.bin/mocha --timeout 60000 --recursive -R xunit > test-reports.xml"
+      },
+      "author": "",
+      "license": "ISC",
+      "devDependencies": {
+          "chai": "*",
+          "mocha": "*"
+       }, "//": "mocha is our preference, but you can use any test runner you like"
+ }

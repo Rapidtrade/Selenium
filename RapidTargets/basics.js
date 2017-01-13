@@ -12,7 +12,7 @@ expect = chai.expect;
 before(function() {
   this.timeout = 8000;
   global.driver = new selenium.Builder().withCapabilities(selenium.Capabilities.chrome()).build();
-  global.url = "http://localhost/git/rapidtargets";
+  global.url = "http://localhost:3000/";
   global.timeout = 30000;
   driver.getWindowHandle();
   driver.get(url);
@@ -230,17 +230,16 @@ describe.only("Activities", function() {
     driver.findElement({id: "Opportunity"}).sendKeys("test");
     driver.findElement({id: "newBtn"}).click();
     driver.sleep(500);
-    driver.findElement({id: "name"}).clear();
     driver.findElement({id: "upfrontFee"}).clear();
-    driver.findElement({id: "upfrontFee"}).sendKeys("1000");
     driver.findElement({id: "monthlyFee"}).clear();
-    driver.findElement({id: "monthlyFee"}).sendKeys("100");
     driver.findElement({id: "closeByDate"}).clear();
+    driver.findElement({id: "name"}).sendKeys("Rapid Sales");
+    driver.findElement({id: "description"}).sendKeys("Rapidsales opportunity");
+    driver.findElement({id: "upfrontFee"}).sendKeys("1000");
+    driver.findElement({id: "monthlyFee"}).sendKeys("100");
     driver.findElement({id: "closeByDate"}).sendKeys("January 1, 2018");
-    //driver.findElement({id: "description"}).sendKeys("Rapidsales opportunity");
-    //driver.findElement({linkText: "Save"}).click();
-    // return waitFor({xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']"}, "\nCould not create opportunity");
-    return driver.sleep(500)
+    driver.findElement({linkText: "Save"}).click();
+    return waitFor({xpath: "//div[@class='alert ng-scope top-right am-fade alert-success']"}, "\nCould not create opportunity");
   });
   // it("Check activity details are remembered and save the activity", function() {
   //   driver.sleep(4000);

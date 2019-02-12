@@ -6,7 +6,7 @@ pipeline {
         stage('initialize') {
           steps {
             sh '''npm install
-mocha bishop/rapidtrade/test-admin-core.js --timeout 600000'''
+ls'''
           }
         }
         stage('print message') {
